@@ -1,0 +1,57 @@
+version: '3'
+services:
+  nexus:
+    image: sonatype/nexus3:3.55.0
+    container_name: nexus
+    privileged: true
+    user: root
+    # networks:
+      # devops:
+          #  ipv4_address: 172.18.0.3
+    ports:
+      - 8081:8081
+      - 8085:8085
+    volumes:
+      - nexus:/nexus-data
+    restart: always
+
+  sonarqube:
+    image: sonarqube
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    environment:
+      - sonar.jdbc.url=jdbc:postgresql://db:5432/sonar
+    volumes:
+      - sonarqube_conf:/opt/sonarqube/conf
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+    # networks:
+      # devops:
+          #  ipv4_address: 172.18.0.4
+  db: 
+     image: postgres
+     environment:
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+     volumes:
+      - postgresql:/var/lib/postgresql
+      - postgresql_data:/var/lib/postgresql/data
+
+volumes:
+  sonarqube_conf: {}
+  sonarqube_data: {}
+  sonarqube_extensions: {}
+  postgresql: {}
+  postgresql_data: {}
+  nexus:
+
+
+
+# networks:
+#   devops:
+#     driver: bridge
+#     name: devopsS
+#     ipam:
+#       config:
+#         # - subnet: 172.18.0.0/24     
